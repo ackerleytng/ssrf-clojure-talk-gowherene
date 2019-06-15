@@ -16,25 +16,20 @@ function curl_get_contents($url) {
     return $data;
 }
 
-function get_lines($content, $n_lines) {
-    if ($n_lines) {
-        $lines = explode(PHP_EOL, $content);
-        return implode(PHP_EOL, array_slice($lines, 0, $n_lines)) . PHP_EOL;
-    } else {
-        return $content;
-    }
+function get_title($content) {
+    preg_match('/<title>.*?<\/title>/i', $content, $matches);
+    return $matches[0];
 }
 
 function main($argv) {
     $url = $argv[1];
-    $lines = intval($argv[2]);
 
     $parsed = parse_url($url);
 
     print_r($parsed);
 
     if (ends_with($parsed["host"], "wikipedia.com")) {
-        print_r(get_lines(curl_get_contents($url), $lines));
+        print_r(get_title(curl_get_contents($url)));
     } else {
         die("You Shall Not Pass\n");
     }
