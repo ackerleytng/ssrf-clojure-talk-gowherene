@@ -42,57 +42,50 @@
       <div class="slides">
 	<section>
           <img src="img/gowherene.svg" />
-          <h1>gowherene</h1>
-          <h4>built with clojure(script)</h4>
-        </section>
-
-	<section>
-          <h2>what is gowherene?</h2>
-          <p>A webapp to help you map out addresses on webpages!</p>
-          <p>Try <a href="https://thesmartlocal.com/read/garden-themed-cafes">this listicle</a>, <a href="https://gowherene.herokuapp.com/?q=https://thesmartlocal.com/read/garden-themed-cafes">mapped out!</a></p>
+          <h1>SSRF in clojure</h1>
+          <h4>and why i care: gowherene</h4>
         </section>
 
 	<section>
           <h2>a little about me</h2>
           <ul>
             <li>work in cybersecurity</li>
-            <li>love</li>
-            <ul>
-              <li>exploring programming languages</li>
-              <li>functional programming/clojure</li>
-            </ul>
+            <li class="fragment">love
+              <ul>
+                <li>exploring programming languages</li>
+                <li>functional programming/clojure</li>
+              </ul>
+            </li>
           </ul>
           <aside class="notes">
             Work in cybersecurity - used to inspect linux userspace daemons and peek into the kernel
             Recently moved to another department, which takes a data perspective on cybersecurity
-          </aside>
-        </section>
 
-	<section>
-          <h2>today's talk</h2>
-          <ul>
-            <li>How gowherene works</li>
-            <li>What could go wrong with this architecture</li>
-            <li>How to prevent SSRF</li>
-            <li>The fix, in clojure</li>
-          </ul>
-          </ul>
-          <aside class="notes">
+            Started on clojure about two years ago hoping to find
+            the lisp enlightenment of ultimate expressiveness in macros
+
             This is my first ever public talk
           </aside>
         </section>
 
 	<section>
+          <h2>motivation: gowherene</h2>
+          <p>A webapp to help you map out addresses on webpages!</p>
+          <p>Try <a href="https://thesmartlocal.com/read/garden-themed-cafes">this listicle</a>, <a href="https://gowherene.herokuapp.com/?q=https://thesmartlocal.com/read/garden-themed-cafes">mapped out!</a></p>
+        </section>
+
+	<section>
           <h2>quick aside</h2>
-          <p>go where 呢 (ne)</p>
-          <p>呢: a Chinese modal particle </p>
-          <p>"what about...?"</p>
+          <p>pronounce: go where 呢 (ne)</p>
+          <p class="fragment">呢: a Chinese modal particle </p>
+          <p class="fragment">"what about...?"</p>
 
           <aside class="notes">
-            gowherene is pronounced gowherene, because, like many other singlish sentences,
-            it is a mix of English and Chinese.
+            gowherene is a singlish sentence fragment, a mix of English and Chinese.
 
             ne is a chinese modal particle (expresses moods)
+
+            ne is sort of used to reflect a question back on the asker
           </aside>
         </section>
 
@@ -109,8 +102,6 @@
           </table>
 
           <aside class="notes">
-            ne is sort of used to reflect a question back on the asker
-
             sort of like when I ask my girlfriend, "where do you want to meet today?" and she goes "not sure, gowherene?"
           </aside>
         </section>
@@ -123,8 +114,9 @@
             <li>How to prevent SSRF</li>
             <li>The fix, in clojure</li>
           </ul>
+          </ul>
           <aside class="notes">
-            This is my first ever public talk
+            Vulnerability in the design
           </aside>
         </section>
 
@@ -143,8 +135,8 @@
 	<section>
           <h2>server-side request forgery</h2>
           <ul>
-            <li>Attacker guesses the url of some internal webserver</li>
-            <li>Abuse the main server to read internal resources</li>
+            <li class="fragment">Attacker guesses the url of some internal webserver</li>
+            <li class="fragment">Abuse the main server to read internal resources</li>
           </ul>
 
           <aside class="notes">
@@ -155,7 +147,7 @@
           <h2>common/possible targets</h2>
           <ul>
             <li><code>file:///etc/passwd</code></li>
-            <li><code>http://169.254.169.254/latest/meta-data/</code></li>
+            <li class="fragment"><code>http://169.254.169.254/latest/meta-data/</code></li>
           </ul>
 
           <aside class="notes">
@@ -163,12 +155,80 @@
             Since the server queries on the attacker's behalf, even the loopback interface is now within bounds
           </aside>
         </section>
-        <section data-markdown>
-	  <textarea data-template>
-## template
 
-+ zz
-	  </textarea>
+	<section>
+          <h2>fix it!</h2>
+          <ul class="fragment">
+            <li>don't trust user inputs</li>
+            <li>validate and reject before access</li>
+          </ul>
+
+          <aside class="notes">
+          </aside>
+        </section>
+
+	<section>
+          <h2>things to check for</h2>
+          <ul>
+            <li>scheme - only allow http/https</li>
+            <li>only permit accesses to WAN addresses</li>
+            <li>only allow accesses to ports 80 and 443</li>
+          </ul>
+
+          <aside class="notes">
+
+          </aside>
+        </section>
+
+	<section>
+          <h2>devil is in the details</h2>
+          <ul class="fragment">
+            <li>parsing</li>
+            <li>validating</li>
+            <li>accessing the address</li>
+          </ul>
+
+          <aside class="notes">
+            As I was preparing for this talk,
+            I came across this presentation by Orange Tsai at BlackHat 2017
+            that discusses SSRF bypasses in a variety of languages
+          </aside>
+        </section>
+
+       	<section>
+          <h2>validation bypass <a href="https://github.com/ackerleytng/gowherene-talk/blob/29611266f29cfd669998221d31ad16a9375e7be2/explore-php/main.php#L24">example</a></h2>
+          <ul class="fragment">
+            <li>php:5.5-cli => http://wikipedia.com</li>
+            <li>php:5.5-cli => http://t.co</li>
+            <li style="color: red;">php:5.5-cli => http://wikipedia.com#@t.co</li>
+            <li>php:5.6-cli => http://wikipedia.com#@t.co</li>
+          </ul>
+
+          <aside class="notes">
+
+          </aside>
+        </section>
+
+       	<section>
+          <h2>To be fair to php</h2>
+          <ul>
+            <li><code style="font-size: 80%">parse_url</code>: php</li>
+            <li><code style="font-size: 80%">curl_get_contents</code>: external library</li>
+            <li>
+              but
+              <a href="https://www.blackhat.com/docs/us-17/thursday/us-17-Tsai-A-New-Era-Of-SSRF-Exploiting-URL-Parser-In-Trending-Programming-Languages.pdf">
+                slides
+              </a>
+              show that Java is vulnerable too!
+            </li>
+          </ul>
+
+          <aside class="notes">
+            I could only reproduce the vulnerability by using parse_url from php and
+            then using curl to access the website
+
+            So I set off trying to explore this vulnerability in clojure
+          </aside>
         </section>
       </div>
     </div>
