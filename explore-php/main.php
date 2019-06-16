@@ -28,7 +28,7 @@ function main($argv) {
 
     print_r($parsed);
 
-    if (ends_with($parsed["host"], "wikipedia.com")) {
+    if (ends_with($parsed["host"], "wikipedia.org")) {
         print_r(get_title(curl_get_contents($url)));
     } else {
         die("You Shall Not Pass\n");
