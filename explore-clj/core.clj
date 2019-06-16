@@ -151,6 +151,9 @@
 
 ;; Dug into http-kit (from backtrace) to find that it uses java.net's URI,
 ;;   instead of URL to parse addresses
+;; java.net.URL's equals() method blocks because it goes out to the network
+;;   to do a reverse lookup of the hostname
+;;   http://blog.markfeeney.com/2010/11/java-uri-vs-url.html
 
 (comment
 

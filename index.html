@@ -35,6 +35,10 @@
      ul {
        list-style: none !important;
      }
+
+     code {
+       font-size: 80%;
+     }
     </style>
   </head>
   <body>
@@ -212,8 +216,8 @@
        	<section>
           <h2>To be fair to php</h2>
           <ul>
-            <li><code style="font-size: 80%">parse_url</code>: php</li>
-            <li><code style="font-size: 80%">curl_get_contents</code>: external library</li>
+            <li><code>parse_url</code>: php</li>
+            <li><code>curl_get_contents</code>: external library</li>
             <li>
               but
               <a href="https://www.blackhat.com/docs/us-17/thursday/us-17-Tsai-A-New-Era-Of-SSRF-Exploiting-URL-Parser-In-Trending-Programming-Languages.pdf">
@@ -228,6 +232,69 @@
             then using curl to access the website
 
             So I set off trying to explore this vulnerability in clojure
+          </aside>
+        </section>
+
+       	<section>
+          <h2>change gears</h2>
+          <ul>
+            <li>to look at some code (explore-clj/core.clj)</li>
+          </ul>
+
+          <aside class="notes">
+          </aside>
+        </section>
+
+       	<section>
+          <h2>conclusions</h2>
+          <ul>
+            <li>ssrf exploits bugs in logic - will affect clojure</li>
+            <li class="fragment">couldn't reproduce host injection bugs in
+              <code>java.net</code>'s
+              <code>URL</code> or
+              <code>URI</code>
+              <ul><li class="fragment" style="font-size: 80%;">other than a potential DOS</li></ul>
+            </li>
+
+          </ul>
+
+          <aside class="notes">
+            ssrf exploits bugs in logic and therefore affects even high level languages like clojure
+            couldn't reproduce bugs, so i think Java is doing pretty well, other than the DOS if there are more than 1 consecutive @s in the URL
+
+          </aside>
+        </section>
+
+       	<section>
+          <h2>references</h2>
+          <ul>
+            <li>
+              <a href="https://www.youtube.com/watch?v=ds4Gp4xoaeA">presentation</a>
+              and
+              <a href="https://www.blackhat.com/docs/us-17/thursday/us-17-Tsai-A-New-Era-Of-SSRF-Exploiting-URL-Parser-In-Trending-Programming-Languages.pdf">slides</a>
+              by Orange Tsai</li>
+            <li>notes on his findings on <a href="https://github.com/orangetw/Tiny-URL-Fuzzer">github</a> </li>
+            <li><a href="https://github.com/tirkarthi/clj-http-ssrf">middleware</a> for clj-http</li>
+          </ul>
+
+          <aside class="notes">
+            I contributed to the clj-http-ssrf to allow predicate-based validation
+          </aside>
+        </section>
+
+        <section>
+          <h2>please use gowherene!</h2>
+
+          <img src="img/gowherene.svg" />
+
+          <p style="font-size: 70%;">
+            <a href="https://gowherene.herokuapp.com">https://gowherene.herokuapp.com</a>
+            <br />
+            @ackerleytng
+          </p>
+
+          <aside class="notes">
+            let me know if gowherene has helped you while you're out roaming singapore
           </aside>
         </section>
       </div>
