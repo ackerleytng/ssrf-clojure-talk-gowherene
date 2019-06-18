@@ -114,13 +114,14 @@
           <h2>today's talk</h2>
           <ul>
             <li>How gowherene works</li>
-            <li>What could go wrong with this architecture</li>
-            <li>How to prevent SSRF</li>
-            <li>The fix, in clojure</li>
+            <li>Intro to SSRF and defending your app</li>
+            <li>Validation bypasses</li>
           </ul>
           </ul>
           <aside class="notes">
             Vulnerability in the design
+
+            Explore validation bypasses by diving into code
           </aside>
         </section>
 
@@ -200,12 +201,12 @@
         </section>
 
        	<section>
-          <h2>validation bypass <a href="https://github.com/ackerleytng/gowherene-talk/blob/29611266f29cfd669998221d31ad16a9375e7be2/explore-php/main.php#L24">example</a></h2>
+          <h2>validation bypass <a href="https://github.com/ackerleytng/gowherene-talk/blob/4f758889d6a6df83b0bec015aac1f0efd02a23ad/explore-php/main.php#L24">example</a></h2>
           <ul class="fragment">
-            <li>php:5.5-cli => http://wikipedia.com</li>
+            <li>php:5.5-cli => http://wikipedia.org</li>
             <li>php:5.5-cli => http://t.co</li>
-            <li style="color: red;">php:5.5-cli => http://wikipedia.com#@t.co</li>
-            <li>php:5.6-cli => http://wikipedia.com#@t.co</li>
+            <li style="color: red;">php:5.5-cli => http://wikipedia.org#@t.co</li>
+            <li>php:5.6-cli => http://wikipedia.org#@t.co</li>
           </ul>
 
           <aside class="notes">

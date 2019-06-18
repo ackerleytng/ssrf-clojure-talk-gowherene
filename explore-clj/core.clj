@@ -40,11 +40,11 @@
 
 (def host-injection-url "http://wikipedia.org#@t.co/")
 
-;; Try out port injection on the first thing I'd reach for
+;; Try out host injection on the first thing I'd reach for
 
 (comment
 
-  (slurp host-injection-url)
+  (slurp host-injection-url)  ;; <= TODO check why it retrieves ""
 
   )
 
@@ -140,12 +140,6 @@
 (comment
 
   (http/get port-injection-url)
-
-  (.getHost (URI. port-injection-url))
-
-  (InetAddress/getByName (.getHost (URI. "http://www.google.com")))
-
-  (InetAddress/getByName (.getHost (URI. port-injection-url)))
 
   )
 
