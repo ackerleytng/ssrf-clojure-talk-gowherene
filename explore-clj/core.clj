@@ -3,8 +3,8 @@
             [etaoin.api :as e]
             [clj-http.client :as client]
             [org.httpkit.client :as http])
-  (:import [java.net URL URI]
-           [java.net InetAddress])
+  (:import [java.net URL URI InetAddress]
+           [java.io StringWriter InputStreamReader])
   (:gen-class))
 
 ;; Define driver paths
@@ -32,7 +32,7 @@
   (try
     (client/get url)
     (catch Exception ex
-      ex)))
+      ex)))'
 
 ;; ===========================================================
 ;;   Overview of code dive
@@ -55,7 +55,40 @@
 
 (comment
 
-  (slurp host-injection-url)  ;; <= TODO check why it retrieves ""
+  (slurp host-injection-url)
+
+  )
+
+;; slurp actually parses out wikipedia.org and accesses wikipedia.org
+;; Response is empty because wikipedia.org didn't respond with any bites
+;; Confirmed this with tcpdump
+;; tcpdump -nn -vv '(port 80 or port 443) and host wikipedia.org'
+
+;; As additional proof that slurp did not eat up the data somehow,
+;;   google actually does respond to this malformed url
+
+(comment
+
+  (->> (slurp "http://google.com#@t.co/")
+       (re-find #"<title>.*?</title>"))
+
+  )
+
+;; slurp's summarized implementation
+
+(defn slurp-summarized [url]
+  (let [sw (StringWriter.)]
+    (with-open
+      [r (InputStreamReader. (.openStream (URL. url)))]
+      (io/copy r sw)
+      (.toString sw))))
+
+(comment
+
+  (slurp-summarized host-injection-url)
+
+  (->> (slurp-summarized "http://google.com")
+       (re-find #"<title>.*?</title>" ))
 
   )
 
