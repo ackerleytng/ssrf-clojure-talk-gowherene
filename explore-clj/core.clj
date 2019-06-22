@@ -34,8 +34,19 @@
     (catch Exception ex
       ex)))
 
+;; ===========================================================
+;;   Overview of code dive
+;;   1. Explore host injection
+;;   2. Explore port injection
+;;   3. Use port injection to understand implementations of
+;;      3a. http-kit
+;;      3b. clj-http
+;;   4. Explore path injection across java versions
+;;   5. Show issue that extends into clojure
+;; ===========================================================
+
 ;; -----------------------------------------------------------
-;;   Start exploration here: host injection
+;;   1. Start exploration here: host injection
 ;; -----------------------------------------------------------
 
 (def host-injection-url "http://wikipedia.org#@t.co/")
@@ -74,7 +85,7 @@
 ;; Doesn't seem to have the same problem as php and curl in php
 
 ;; -----------------------------------------------------------
-;;   Port injection?
+;;   2. Port injection?
 ;; -----------------------------------------------------------
 
 (def port-injection-url "http://www.google.com:443:80/")
@@ -112,36 +123,8 @@
   )
 
 ;; -----------------------------------------------------------
-;;   Let's dig into clj-http a little bit
+;;   3a. Parsing implementation in http-kit
 ;; -----------------------------------------------------------
-
-(comment
-
-  (client/get port-injection-url)
-
-  )
-
-;; >> Look at the backtrace to examine how the url is parsed
-
-(comment
-
-  (client/parse-url port-injection-url)
-
-  (URL. port-injection-url)
-
-  )
-
-;; slurp and clj-http's get both use java's URL. to parse the provided URL
-
-;; -----------------------------------------------------------
-;;   Look into http/get too
-;; -----------------------------------------------------------
-
-(comment
-
-  (http/get port-injection-url)
-
-  )
 
 ;; Dug into http-kit (from backtrace) to find that it uses java.net's URI,
 ;;   instead of URL to parse addresses
@@ -171,7 +154,29 @@
   )
 
 ;; -----------------------------------------------------------
-;;   Going back to path injection
+;;   3b. Parsing implementation in clj-http
+;; -----------------------------------------------------------
+
+(comment
+
+  (client/get port-injection-url)
+
+  )
+
+;; >> Look at the backtrace to examine how the url is parsed
+
+(comment
+
+  (client/parse-url port-injection-url)
+
+  (URL. port-injection-url)
+
+  )
+
+;; slurp and clj-http's get both use java's URL. to parse the provided URL
+
+;; -----------------------------------------------------------
+;;   4. Going back to path injection, across java versions
 ;; -----------------------------------------------------------
 
 ;; Coded up a short java program to test for the path-injection vulnerability
@@ -201,7 +206,9 @@
 ;; openjdk:8-alpine => couldn't parse out host
 ;; openjdk:12-alpine => couldn't parse out host
 
-;; Naturally, this issue is propagated to clojure
+;; -----------------------------------------------------------
+;;   5. Naturally, this issue is propagated to clojure
+;; -----------------------------------------------------------
 
 (comment
 
