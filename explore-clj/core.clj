@@ -34,6 +34,14 @@
     (catch Exception ex
       ex)))'
 
+(comment
+
+  ;; Parsing a legit url (dashes in domain names are allowed: https://css-tricks.com)
+  (client/parse-url
+   "https://username:password@server-name:8000/uri?query=string&is=long")
+
+  )
+
 ;; ===========================================================
 ;;   Overview of code dive
 ;;   1. Explore host injection
@@ -60,7 +68,7 @@
   )
 
 ;; slurp actually parses out wikipedia.org and accesses wikipedia.org
-;; Response is empty because wikipedia.org didn't respond with any bites
+;; Response is empty because wikipedia.org didn't respond with any bytes
 ;; Confirmed this with tcpdump
 ;; tcpdump -nn -vv '(port 80 or port 443) and host wikipedia.org'
 
@@ -159,11 +167,7 @@
 ;;   3a. Parsing implementation in http-kit
 ;; -----------------------------------------------------------
 
-;; Dug into http-kit (from backtrace) to find that it uses java.net's URI,
-;;   instead of URL to parse addresses
-;; java.net.URL's equals() method blocks because it goes out to the network
-;;   to do a reverse lookup of the hostname
-;;   http://blog.markfeeney.com/2010/11/java-uri-vs-url.html
+;; Reproduce the relevant part of http-kit's implementation here
 
 (comment
 
@@ -206,7 +210,13 @@
 
   )
 
-;; slurp and clj-http's get both use java's URL. to parse the provided URL
+;; Differences in implementation:
+;;   slurp and clj-http's get both use java's URL. to parse the provided URL
+;;   http-kit uses java.net's URI, instead of URL to parse addresses
+
+;; java.net.URL's equals() method blocks because it goes out to the network
+;;   and looks up the hostname
+;; http://blog.markfeeney.com/2010/11/java-uri-vs-url.html
 
 ;; -----------------------------------------------------------
 ;;   4. Going back to path injection, across java versions
@@ -244,10 +254,6 @@
 ;; -----------------------------------------------------------
 
 (comment
-
-  ;; Parsing a legit url (dashes in domain names are allowed: https://css-tricks.com)
-  (client/parse-url
-   "https://username:password@server-name:8000/uri?query=string&is=long")
 
   (System/getProperty "java.version")
 
