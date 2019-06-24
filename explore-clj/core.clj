@@ -212,9 +212,9 @@
 
 ;; Differences in implementation:
 ;;   slurp and clj-http's get both use java's URL. to parse the provided URL
-;;   http-kit uses java.net's URI, instead of URL to parse addresses
+;;   http-kit uses java's net.URI, instead of URL to parse addresses
 
-;; java.net.URL's equals() method blocks because it goes out to the network
+;; java net.URL's equals() method blocks because it goes out to the network
 ;;   and looks up the hostname
 ;; http://blog.markfeeney.com/2010/11/java-uri-vs-url.html
 
