@@ -2,7 +2,11 @@
 
 Gave this talk at the Singapore Clojure meetup in June 2019
 
-### To view slides
+### View slides
+
+https://ackerleytng.github.io/ssrf-clojure-talk-gowherene/
+
+### To work on slides
 
 ```
 npm start
