@@ -2,6 +2,14 @@
 
 Gave this talk at the Singapore Clojure meetup in June 2019
 
+### To view slides
+
+```
+npm start
+```
+
+and your browser should pop up
+
 ### Before talk
 
 + emacs
